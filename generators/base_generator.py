@@ -14,30 +14,49 @@ class BaseGenerator(ABC):
         self.device_manager = DeviceManager()
         self.service_manager = ServiceManager()
     
-    def create_system_prompt(self, include_all_devices: bool = True) -> str:
+    def create_system_prompt(self, include_all_devices: bool = True, required_devices: List[Dict] = None, 
+                           exclusive_device_types: List[str] = None) -> str:
         """
         创建系统提示（模拟真实家庭环境，包含各类设备）
         
         Args:
             include_all_devices: 是否包含所有类型的设备（默认True，模拟真实家庭）
+            required_devices: 必须包含的设备列表（这些设备一定会出现在系统提示中）
+            exclusive_device_types: 排他性设备类型列表（这些类型只会包含required_devices中的设备，不会再随机添加）
             
         Returns:
             系统提示字符串
         """
         if include_all_devices:
-            # 从每种设备类型中随机选择一些设备，模拟真实家庭
+            import random
+            
+            # 首先确保必需的设备被包含
             all_devices = []
+            required_device_ids = set()
+            exclusive_types = set(exclusive_device_types) if exclusive_device_types else set()
+            
+            if required_devices:
+                all_devices.extend(required_devices)
+                required_device_ids = {d['id'] for d in required_devices}
+            
+            # 从每种设备类型中随机选择一些设备，模拟真实家庭
             for device_type in self.device_manager.get_all_device_types():
+                # 如果这个类型是排他性的，跳过（已经在required_devices中包含了所有需要的设备）
+                if device_type in exclusive_types:
+                    continue
+                    
                 devices_of_type = self.device_manager.get_all_devices_by_type(device_type)
                 if devices_of_type:
-                    # 随机选择该类型的部分设备（至少2个，最多全部）
-                    import random
-                    count = random.randint(min(2, len(devices_of_type)), len(devices_of_type))
-                    selected = random.sample(devices_of_type, count)
-                    all_devices.extend(selected)
+                    # 过滤掉已经在必需设备列表中的设备
+                    available_devices = [d for d in devices_of_type if d['id'] not in required_device_ids]
+                    
+                    if available_devices:
+                        # 随机选择该类型的部分设备（至少1个，最多全部）
+                        count = random.randint(min(1, len(available_devices)), len(available_devices))
+                        selected = random.sample(available_devices, count)
+                        all_devices.extend(selected)
             
             # 打乱设备顺序，更自然
-            import random
             random.shuffle(all_devices)
             
             device_lines = []

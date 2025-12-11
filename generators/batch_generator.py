@@ -59,23 +59,26 @@ class BatchGenerator(BaseGenerator):
             device_type = random.choice(available_types)
         
         # 获取该类型的所有设备
-        all_devices = self.device_manager.get_all_devices_by_type(device_type)
+        all_devices_in_db = self.device_manager.get_all_devices_by_type(device_type)
         
-        if not all_devices:
+        if not all_devices_in_db:
             raise ValueError(f"No devices found for type: {device_type}")
         
-        # 确定操作的设备数量
+        # 确定系统中存在的设备数量（模拟真实家庭，不会有太多设备）
+        # 随机选择2-5个该类型的设备作为"家里的设备"
         if device_count is None:
-            device_count = len(all_devices)
+            max_count = min(5, len(all_devices_in_db))  # 最多5个
+            min_count = min(2, len(all_devices_in_db))  # 至少2个
+            device_count = random.randint(min_count, max_count)
         else:
-            device_count = min(device_count, len(all_devices))
+            device_count = min(device_count, len(all_devices_in_db))
         
-        # 随机选择设备
-        if device_count == len(all_devices):
-            selected_devices = all_devices
-        else:
-            selected_devices = random.sample(all_devices, device_count)
-        
+        # 这些是"系统中存在的设备"（会出现在系统提示中）
+        selected_devices = random.sample(all_devices_in_db, device_count)
+
+        print("[DEBUG] all_devices_in_db:", [d["id"] for d in all_devices_in_db])
+        print("[DEBUG] selected_devices (in system):", [d["id"] for d in selected_devices])
+
         # 随机选择一个操作
         service, action = self.service_manager.get_random_action(device_type, language)
         if not service:
@@ -127,20 +130,14 @@ class BatchGenerator(BaseGenerator):
                 user_input = random.choice(templates)
                 response_text = f"好的，所有{device_type_name}亮度已调到{brightness}！"
             else:
-                if device_count == len(all_devices):
-                    templates = [
-                        f"{action}所有的{device_type_name}",
-                        f"帮我{action}所有{device_type_name}",
-                        f"把所有{device_type_name}都{action}",
-                        f"所有{device_type_name}{action}",
-                        f"{action}全部{device_type_name}",
-                    ]
-                else:
-                    templates = [
-                        f"{action}所有{device_type_name}",
-                        f"帮我{action}所有{device_type_name}",
-                        f"把{device_type_name}都{action}",
-                    ]
+                # 用户说"所有"指的是系统中的所有该类设备
+                templates = [
+                    f"{action}所有的{device_type_name}",
+                    f"帮我{action}所有{device_type_name}",
+                    f"把所有{device_type_name}都{action}",
+                    f"所有{device_type_name}{action}",
+                    f"{action}全部{device_type_name}",
+                ]
                 user_input = random.choice(templates)
                 response_templates = [
                     "全部完成！",
@@ -186,9 +183,16 @@ class BatchGenerator(BaseGenerator):
         
         formatted_calls = self.format_service_calls(service_calls)
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
-        
+        print("[DEBUG] formatted_calls_str:\n", formatted_calls)
+        print("[DEBUG] assistant_response:\n", assistant_response)
         # 创建系统提示（包含所有类型的设备，模拟真实家庭环境）
-        system_prompt = self.create_system_prompt(include_all_devices=True)
+        # 确保选中的设备一定会出现在系统提示中
+        # 并且该设备类型只包含这些选中的设备（exclusive_device_types）
+        system_prompt = self.create_system_prompt(
+            include_all_devices=True, 
+            required_devices=selected_devices,
+            exclusive_device_types=[device_type]
+        )
         
         return self.create_message(system_prompt, user_input, assistant_response)
     

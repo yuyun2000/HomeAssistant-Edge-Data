@@ -61,49 +61,90 @@ class SequentialGenerator(BaseGenerator):
         # 生成操作
         operations = []
         service_calls = []
+        selected_devices = []  # 保存选中的设备，用于系统提示
         
         for device_type in selected_types:
             device = self.device_manager.get_random_device(device_type)
             if not device:
                 continue
             
+            selected_devices.append(device)  # 记录选中的设备
+            
             service, action = self.service_manager.get_random_action(device_type, language)
             if not service:
                 continue
             
-            # 构建操作描述 - 更口语化
+            # 构建服务调用参数
+            params = {}
+            color_name = None
+            brightness = None
+            
+            # 如果是灯光打开操作，可能添加颜色或亮度（但要在用户输入中体现）
+            if device_type == "light" and service == "light.turn_on":
+                rand_val = random.random()
+                if rand_val < 0.4:  # 30%概率添加颜色
+                    color_name, rgb = self.service_manager.get_random_color()
+                    params["rgb_color"] = self.service_manager.format_rgb_color(rgb)
+                elif rand_val < 0.7:  # 20%概率添加亮度
+                    brightness = self.service_manager.get_random_brightness()
+                    params["brightness"] = brightness
+            
+            # 构建操作描述 - 更口语化，并包含颜色/亮度信息
             if language == "zh":
                 device_name = device.get('name_zh', device['name'])  # 使用中文名称
                 device_type_name = self.device_type_names.get(device_type, device_type)
-                # 随机使用不同的口语化表达
-                templates = [
-                    f"{action}{device_name}",
-                    f"帮我{action}{device_name}",
-                    f"把{device_name}{action}",
-                    f"给我{action}{device_name}",
-                    f"{action}一下{device_name}",
-                ]
+                
+                # 如果有颜色或亮度参数，需要在操作描述中体现
+                if color_name:
+                    templates = [
+                        f"把{device_name}变成{color_name}",
+                        f"{device_name}调成{color_name}",
+                        f"帮我把{device_name}换成{color_name}",
+                        f"给{device_name}改成{color_name}",
+                    ]
+                elif brightness:
+                    templates = [
+                        f"把{device_name}亮度调到{brightness}",
+                        f"{device_name}亮度{brightness}",
+                        f"帮我把{device_name}设为{brightness}亮度",
+                        f"给{device_name}调到{brightness}",
+                    ]
+                else:
+                    # 普通操作，不带颜色和亮度
+                    templates = [
+                        f"{action}{device_name}",
+                        f"帮我{action}{device_name}",
+                        f"把{device_name}{action}",
+                        f"给我{action}{device_name}",
+                        f"{action}一下{device_name}",
+                    ]
                 operation_desc = random.choice(templates)
             else:  # en
-                templates = [
-                    f"{action} the {device['name']}",
-                    f"can you {action} the {device['name']}",
-                    f"please {action} the {device['name']}",
-                    f"{action} {device['name']}",
-                ]
+                if color_name:
+                    # 获取英文颜色名
+                    from config import COLORS_EN
+                    color_en = COLORS_EN.get(color_name, color_name)
+                    templates = [
+                        f"change the {device['name']} to {color_en}",
+                        f"set the {device['name']} to {color_en}",
+                        f"make the {device['name']} {color_en}",
+                        f"turn the {device['name']} {color_en}",
+                    ]
+                elif brightness:
+                    templates = [
+                        f"set the {device['name']} brightness to {brightness}",
+                        f"adjust the {device['name']} to {brightness} brightness",
+                        f"make the {device['name']} brightness {brightness}",
+                    ]
+                else:
+                    templates = [
+                        f"{action} the {device['name']}",
+                        f"can you {action} the {device['name']}",
+                        f"please {action} the {device['name']}",
+                        f"{action} {device['name']}",
+                    ]
                 operation_desc = random.choice(templates)
             operations.append(operation_desc)
-            
-            # 构建服务调用
-            params = {}
-            
-            # 如果是灯光操作，可能添加颜色或亮度
-            if device_type == "light" and service == "light.turn_on":
-                if random.random() < 0.3:  # 30%概率添加颜色
-                    color_name, rgb = self.service_manager.get_random_color()
-                    params["rgb_color"] = self.service_manager.format_rgb_color(rgb)
-                elif random.random() < 0.3:  # 30%概率添加亮度
-                    params["brightness"] = self.service_manager.get_random_brightness()
             
             service_call = self.service_manager.build_service_call(
                 service, device["id"], params
@@ -168,7 +209,14 @@ class SequentialGenerator(BaseGenerator):
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
         
         # 创建系统提示（包含所有类型的设备，模拟真实家庭环境）
-        system_prompt = self.create_system_prompt(include_all_devices=True)
+        # 确保操作的设备一定会出现在系统提示中
+        # 获取所有选中设备的类型（去重）
+        exclusive_types = list(set([d['id'].split('.')[0] for d in selected_devices]))
+        system_prompt = self.create_system_prompt(
+            include_all_devices=True,
+            required_devices=selected_devices,
+            exclusive_device_types=exclusive_types
+        )
         
         return self.create_message(system_prompt, user_input, assistant_response)
     

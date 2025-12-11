@@ -52,6 +52,9 @@ class LightControlGenerator(BaseGenerator):
             )
             service_calls.append(service_call)
         
+        # 先生成系统提示，确保选中的设备都在系统提示中
+        system_prompt = self.create_system_prompt(include_all_devices=True, required_devices=selected_lights)
+        
         # 生成用户输入
         if language == "zh":
             if is_multiple:
@@ -138,7 +141,6 @@ class LightControlGenerator(BaseGenerator):
         formatted_calls = self.format_service_calls(service_calls)
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
         
-        system_prompt = self.create_system_prompt(include_all_devices=True)
         return self.create_message(system_prompt, user_input, assistant_response)
     
     def generate_brightness_change(self, language: str = None) -> Dict:
@@ -186,6 +188,9 @@ class LightControlGenerator(BaseGenerator):
                 "light.turn_on", light["id"], params
             )
             service_calls.append(service_call)
+        
+        # 先生成系统提示，确保选中的设备都在系统提示中
+        system_prompt = self.create_system_prompt(include_all_devices=True, required_devices=selected_lights)
         
         # 生成用户输入
         if language == "zh":
@@ -306,7 +311,6 @@ class LightControlGenerator(BaseGenerator):
         formatted_calls = self.format_service_calls(service_calls)
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
         
-        system_prompt = self.create_system_prompt(include_all_devices=True)
         return self.create_message(system_prompt, user_input, assistant_response)
     
     def generate_color_and_brightness(self, language: str = None) -> Dict:
@@ -348,6 +352,9 @@ class LightControlGenerator(BaseGenerator):
                 "light.turn_on", light["id"], params
             )
             service_calls.append(service_call)
+        
+        # 先生成系统提示，确保选中的设备都在系统提示中
+        system_prompt = self.create_system_prompt(include_all_devices=True, required_devices=selected_lights)
         
         # 生成用户输入
         if language == "zh":
@@ -404,7 +411,6 @@ class LightControlGenerator(BaseGenerator):
         formatted_calls = self.format_service_calls(service_calls)
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
         
-        system_prompt = self.create_system_prompt(include_all_devices=True)
         return self.create_message(system_prompt, user_input, assistant_response)
     
     def generate_mixed_control(self, language: str = None) -> Dict:
@@ -475,6 +481,9 @@ class LightControlGenerator(BaseGenerator):
             )
             service_calls.append(service_call)
         
+        # 先生成系统提示，确保选中的设备都在系统提示中
+        system_prompt = self.create_system_prompt(include_all_devices=True, required_devices=selected_lights)
+        
         # 生成用户输入
         if language == "zh":
             parts = []
@@ -544,7 +553,6 @@ class LightControlGenerator(BaseGenerator):
         formatted_calls = self.format_service_calls(service_calls)
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
         
-        system_prompt = self.create_system_prompt(include_all_devices=True)
         return self.create_message(system_prompt, user_input, assistant_response)
     
     def generate_single(self, change_type: str = None, language: str = None) -> Dict:
