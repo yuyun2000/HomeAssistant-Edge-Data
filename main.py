@@ -4,7 +4,7 @@
 import json
 import argparse
 from typing import List, Dict
-from generators import SequentialGenerator, BatchGenerator, LightControlGenerator
+from generators import SequentialGenerator, BatchGenerator, LightControlGenerator, MixedGenerator
 
 
 class DataGenerator:
@@ -14,6 +14,7 @@ class DataGenerator:
         self.sequential_generator = SequentialGenerator()
         self.batch_generator = BatchGenerator()
         self.light_control_generator = LightControlGenerator()
+        self.mixed_generator = MixedGenerator()
     
     def generate_sequential_data(self, count: int = 10, 
                                  operation_count: int = None) -> List[Dict]:
@@ -66,16 +67,34 @@ class DataGenerator:
         print(f"✓ 成功生成 {len(data)} 条灯光控制数据")
         return data
     
+    def generate_combined_operation_data(self, count: int = 10) -> List[Dict]:
+        """
+        生成混合操作数据（统一操作+单独操作混合在一起）
+        例如：打开所有的灯并把窗帘拉上
+        
+        Args:
+            count: 生成数量
+            
+        Returns:
+            生成的数据列表
+        """
+        print(f"正在生成 {count} 条混合操作数据...")
+        data = self.mixed_generator.generate(count)
+        print(f"✓ 成功生成 {len(data)} 条混合操作数据")
+        return data
+    
     def generate_mixed_data(self, sequential_count: int = 10, 
                            batch_count: int = 10,
-                           light_control_count: int = 10) -> List[Dict]:
+                           light_control_count: int = 10,
+                           combined_count: int = 10) -> List[Dict]:
         """
-        生成混合数据（连续操作 + 统一操作 + 灯光控制）
+        生成混合数据（包含所有类型：连续操作 + 统一操作 + 灯光控制 + 混合操作）
         
         Args:
             sequential_count: 连续操作数据数量
             batch_count: 统一操作数据数量
             light_control_count: 灯光控制数据数量
+            combined_count: 混合操作数据数量
             
         Returns:
             生成的数据列表
@@ -85,6 +104,7 @@ class DataGenerator:
         data.extend(self.generate_sequential_data(sequential_count))
         data.extend(self.generate_batch_data(batch_count))
         data.extend(self.generate_light_control_data(light_control_count))
+        data.extend(self.generate_combined_operation_data(combined_count))
         print(f"✓ 总共生成 {len(data)} 条数据")
         return data
     
@@ -123,9 +143,9 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description='智能家居数据生成器')
     parser.add_argument('--type', '-t', 
-                       choices=['sequential', 'batch', 'light', 'mixed'],
+                       choices=['sequential', 'batch', 'light', 'combined', 'mixed'],
                        default='mixed',
-                       help='数据类型: sequential(连续操作), batch(统一操作), light(灯光控制), mixed(混合)')
+                       help='数据类型: sequential(连续操作), batch(统一操作), light(灯光控制), combined(混合操作), mixed(全部混合)')
     parser.add_argument('--count', '-c', 
                        type=int, 
                        default=30,
@@ -158,12 +178,15 @@ def main():
         data = generator.generate_batch_data(args.count, args.device_type)
     elif args.type == 'light':
         data = generator.generate_light_control_data(args.count, args.change_type)
+    elif args.type == 'combined':
+        data = generator.generate_combined_operation_data(args.count)
     else:  # mixed
         # mixed模式下，平均分配数量
-        seq_count = args.count // 3
-        batch_count = args.count // 3
-        light_count = args.count - seq_count - batch_count
-        data = generator.generate_mixed_data(seq_count, batch_count, light_count)
+        seq_count = args.count // 4
+        batch_count = args.count // 4
+        light_count = args.count // 4
+        combined_count = args.count - seq_count - batch_count - light_count
+        data = generator.generate_mixed_data(seq_count, batch_count, light_count, combined_count)
     
     # 预览数据
     if args.preview:
