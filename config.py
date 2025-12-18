@@ -50,6 +50,10 @@ SERVICES = {
         "vacuum.return_to_base()",
         "vacuum.start()",
         "vacuum.stop()"
+    ],
+    "switch": [
+        "switch.turn_on()",
+        "switch.turn_off()",
     ]
 }
 
@@ -97,6 +101,7 @@ DEVICES = {
         {"id": "light.kids_main", "name": "Kids Main Light", "name_zh": "儿童房主灯"},
         {"id": "light.kids_night", "name": "Kids Night Light", "name_zh": "儿童夜灯"},
 
+        {"id": "light.master", "name": "Master Bedroom Light", "name_zh": "主卧灯"},
         {"id": "light.guest", "name": "Guest Room Light", "name_zh": "客房灯"},
         {"id": "light.guest_main", "name": "Guest Main Light", "name_zh": "客房主灯"},
         {"id": "light.guest_bedside", "name": "Guest Bedside Lamp", "name_zh": "客房床头灯"},
@@ -341,7 +346,60 @@ DEVICES = {
         {"id": "media_player.study_headphones", "name": "Study Headphones", "name_zh": "书房耳机"},
         {"id": "media_player.game_console", "name": "Game Console", "name_zh": "游戏主机"},
         {"id": "media_player.projector", "name": "Home Projector", "name_zh": "家庭投影仪"},
+    ],
+    "switch": [
+        # --- 加热设备 (Heaters) ---
+        {"id": "switch.living_room_heater", "name": "Living Room Space Heater", "name_zh": "客厅取暖器"},
+        {"id": "switch.bedroom_floor_heating", "name": "Master Bedroom Floor Heating", "name_zh": "主卧地暖"},
+        {"id": "switch.bathroom_wall_heater", "name": "Bathroom Wall-Mounted Heater", "name_zh": "浴室壁挂暖风机"},
+        {"id": "switch.patio_heater", "name": "Outdoor Patio Heater", "name_zh": "户外露台加热器"},
+        {"id": "switch.office_foot_warmer", "name": "Office Foot Warmer Mat", "name_zh": "办公室暖脚垫"},
+        {"id": "switch.towel_warmer", "name": "Plug-in Towel Warmer", "name_zh": "电热毛巾架"},
+        {"id": "switch.baseboard_heater", "name": "Baseboard Convection Heater", "name_zh": "踢脚线加热器"},
+        {"id": "switch.garage_heater", "name": "Garage Workshop Heater", "name_zh": "车库工作间加热器"},
+        {"id": "switch.heater", "name": "Heater", "name_zh": "加热器"},
+
+        # --- 厨房电器 (Kitchen Appliances) ---
+        {"id": "switch.rice_cooker", "name": "Smart Rice Cooker", "name_zh": "智能电饭煲"},
+        {"id": "switch.toaster", "name": "Kitchen Toaster", "name_zh": "烤面包机"},
+        {"id": "switch.slow_cooker", "name": "Electric Slow Cooker", "name_zh": "电炖锅"},
+        {"id": "switch.wine_cooler", "name": "Wine Cellar Cooler", "name_zh": "酒柜制冷器"},
+        {"id": "switch.sandwich_maker", "name": "Breakfast Sandwich Maker", "name_zh": "三明治机"},
+        {"id": "switch.dishwasher_power", "name": "Dishwasher Main Power", "name_zh": "洗碗机总电源"},
+        {"id": "switch.water_dispenser", "name": "Instant Water Dispenser", "name_zh": "即热饮水机"},
+
+        # --- 清洁与机器人 (Cleaning & Robotics) ---
+        {"id": "switch.robot_mop", "name": "Robotic Mop Power", "name_zh": "拖地机器人电源"},
+        {"id": "switch.shoe_dryer", "name": "Electric Shoe Dryer", "name_zh": "烘鞋器"},
+        {"id": "switch.ultrasonic_cleaner", "name": "Ultrasonic Jewelry Cleaner", "name_zh": "超声波清洗机"},
+        {"id": "switch.pool_cleaner", "name": "Automatic Pool Cleaner", "name_zh": "自动泳池清洗机"},
+
+        # --- 生活环境与健康 (Environment & Health) ---
+        {"id": "switch.massage_chair", "name": "Living Room Massage Chair", "name_zh": "客厅按摩椅"},
+        {"id": "switch.oxygen_concentrator", "name": "Home Oxygen Concentrator", "name_zh": "家用制氧机"},
+        {"id": "switch.uv_sanitizer", "name": "Entrance UV Sanitizer", "name_zh": "玄关紫外线消毒灯"},
+        {"id": "switch.electric_toothbrush_charger", "name": "Toothbrush Sanitizer Case", "name_zh": "牙刷消毒盒"},
+        {"id": "switch.eye_massager", "name": "Eye Massager Charger", "name_zh": "眼部按摩仪"},
+
+        # --- 户外与园艺 (Outdoor & Garden) ---
+        {"id": "switch.pond_fountain", "name": "Garden Pond Fountain", "name_zh": "花园喷泉"},
+        {"id": "switch.insect_trap", "name": "Outdoor Insect Trap", "name_zh": "户外捕虫灯"},
+        {"id": "switch.greenhouse_fan", "name": "Greenhouse Exhaust Fan", "name_zh": "温室排风扇"},
+        {"id": "switch.irrigation_pump", "name": "Lawn Irrigation Pump", "name_zh": "草坪灌溉泵"},
+
+        # --- 娱乐与办公 (Entertainment & Office) ---
+        {"id": "switch.christmas_tree_lights", "name": "Christmas Tree Lights", "name_zh": "圣诞树装饰灯"},
+        {"id": "switch.projector_screen", "name": "Projector Screen Motor", "name_zh": "投影幕布电机"},
+        {"id": "switch.three_d_printer", "name": "3D Printer Power", "name_zh": "3D打印机电源"},
+        {"id": "switch.paper_shredder", "name": "Office Paper Shredder", "name_zh": "碎纸机"},
+        {"id": "switch.soldering_station", "name": "Hobby Soldering Station", "name_zh": "焊台电源"},
+
+        # --- 其他 (Misc) ---
+        {"id": "switch.door_bell_chime", "name": "Doorbell Chime Mute", "name_zh": "门铃响铃开关"},
+        {"id": "switch.garage_door_opener", "name": "Garage Door Remote Switch", "name_zh": "车库门遥控开关"},
+        {"id": "switch.scented_oil_warmer", "name": "Scented Oil Warmer", "name_zh": "香薰油加热器"},
     ]
+
 }
 
 # 颜色映射（RGB）

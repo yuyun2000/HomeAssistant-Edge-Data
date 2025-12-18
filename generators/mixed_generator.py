@@ -20,7 +20,8 @@ class MixedGenerator(BaseGenerator):
             "fan": "风扇",
             "vacuum": "扫地机器人",
             "media_player": "媒体播放器",
-            "timer": "定时器"
+            "timer": "定时器",
+            "switch": "开关",
         }
         self.device_type_names_en = {
             "light": "lights",
@@ -29,7 +30,8 @@ class MixedGenerator(BaseGenerator):
             "fan": "fans",
             "vacuum": "vacuums",
             "media_player": "media players",
-            "timer": "timers"
+            "timer": "timers",
+            "switch": "switches",
         }
     
     def generate_batch_operation(self, device_type: str, language: str) -> tuple:

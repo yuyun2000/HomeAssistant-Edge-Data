@@ -18,7 +18,8 @@ class SequentialGenerator(BaseGenerator):
             "fan": "风扇",
             "vacuum": "扫地机器人",
             "media_player": "媒体播放器",
-            "timer": "定时器"
+            "timer": "定时器",
+            "switch": "开关"
         }
         self.device_type_names_en = {
             "light": "light",
@@ -27,7 +28,8 @@ class SequentialGenerator(BaseGenerator):
             "fan": "fan",
             "vacuum": "vacuum",
             "media_player": "media player",
-            "timer": "timer"
+            "timer": "timer",
+            "switch": "switch"
         }
     
     def generate_single(self, operation_count: int = None, language: str = None) -> Dict:

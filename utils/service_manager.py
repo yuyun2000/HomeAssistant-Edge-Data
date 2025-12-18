@@ -42,6 +42,8 @@ class ServiceManager:
         "timer.start": ["启动", "开始", "设置", "开启计时", "启动计时器"],
         "timer.pause": ["暂停", "暂停计时"],
         "timer.cancel": ["取消", "停止", "取消计时", "停止计时"],
+        "switch.turn_on": ["打开", "开启", "开", "启动"],
+        "switch.turn_off": ["关闭", "关掉",  "关", "停止"],
     }
     
     # 服务与英文动作的映射
@@ -77,6 +79,8 @@ class ServiceManager:
         "timer.start": ["start", "set", "begin", "activate", "start timer"],
         "timer.pause": ["pause", "pause timer"],
         "timer.cancel": ["cancel", "stop", "abort", "end timer"],
+        "switch.turn_on": ["turn on", "switch on", "power on", "activate"],
+        "switch.turn_off": ["turn off", "switch off", "power off", "deactivate"],
     }
     
     # 反向映射：中文动作到服务

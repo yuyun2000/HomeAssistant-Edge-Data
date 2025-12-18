@@ -19,7 +19,8 @@ class BatchGenerator(BaseGenerator):
             "fan": "风扇",
             "vacuum": "扫地机器人",
             "media_player": "媒体播放器",
-            "timer": "定时器"
+            "timer": "定时器",
+            "switch": "开关",
         }
         self.device_type_names_en = {
             "light": "lights",
@@ -28,7 +29,8 @@ class BatchGenerator(BaseGenerator):
             "fan": "fans",
             "vacuum": "vacuums",
             "media_player": "media players",
-            "timer": "timers"
+            "timer": "timers",
+            "switch": "switches",
         }
         
         # 统一操作的描述模板
@@ -76,8 +78,7 @@ class BatchGenerator(BaseGenerator):
         # 这些是"系统中存在的设备"（会出现在系统提示中）
         selected_devices = random.sample(all_devices_in_db, device_count)
 
-        print("[DEBUG] all_devices_in_db:", [d["id"] for d in all_devices_in_db])
-        print("[DEBUG] selected_devices (in system):", [d["id"] for d in selected_devices])
+
 
         # 随机选择一个操作
         service, action = self.service_manager.get_random_action(device_type, language)
@@ -183,8 +184,7 @@ class BatchGenerator(BaseGenerator):
         
         formatted_calls = self.format_service_calls(service_calls)
         assistant_response = f"{response_text}\n```homeassistant\n{formatted_calls}\n```"
-        print("[DEBUG] formatted_calls_str:\n", formatted_calls)
-        print("[DEBUG] assistant_response:\n", assistant_response)
+
         # 创建系统提示（包含所有类型的设备，模拟真实家庭环境）
         # 确保选中的设备一定会出现在系统提示中
         # 并且该设备类型只包含这些选中的设备（exclusive_device_types）

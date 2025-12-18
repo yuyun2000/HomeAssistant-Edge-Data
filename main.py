@@ -160,7 +160,7 @@ def main():
                        type=int,
                        help='连续操作模式下，每条数据的操作数量')
     parser.add_argument('--device-type', 
-                       choices=['light', 'cover', 'lock', 'fan', 'vacuum', 'media_player', 'timer'],
+                       choices=['light', 'cover', 'lock', 'fan', 'vacuum', 'media_player', 'timer','switch'],
                        help='统一操作模式下，指定设备类型')
     parser.add_argument('--change-type',
                        choices=['color', 'brightness', 'both'],
